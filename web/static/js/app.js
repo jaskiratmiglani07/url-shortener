@@ -106,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
   async function loadAnalytics(code) {
     currentCode = code;
     analyticsError.classList.remove('active');
-    analyticsResult.classList.remove('active');
+    analyticsResult.style.display = 'none';
 
     try {
       const res = await fetch(`/api/v1/analytics/${encodeURIComponent(code)}`);
@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       testRedirectBtn.href = `/${data.short_code}`;
-      analyticsResult.classList.add('active');
+      analyticsResult.style.display = 'block';
     } catch (err) {
       analyticsError.textContent = err.message;
       analyticsError.classList.add('active');
