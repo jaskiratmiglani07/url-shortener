@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GoLink - Modern URL Shortener & Analytics</title>
+  <meta name="description" content="High performance URL shortener with Redis caching, PostgreSQL persistence, and real-time link click analytics.">
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <div class="bg-glow"></div>
+
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="brand-icon">⚡</div>
+        <h1>GoLink Shortener</h1>
+      </div>
+      <p class="tagline">Ultra-fast URL shortening with Redis caching & link click analytics</p>
+    </header>
+
+    <nav class="tabs" aria-label="Navigation Tabs">
+      <button id="tab-shorten" class="tab-btn active" type="button">Shorten URL</button>
+      <button id="tab-analytics" class="tab-btn" type="button">Link Analytics</button>
+    </nav>
+
+    <!-- SECTION: SHORTEN -->
+    <main id="section-shorten" class="card">
+      <form id="shorten-form">
+        <div class="form-group">
+          <label for="long-url">Destination URL *</label>
+          <input type="url" id="long-url" class="input-field" placeholder="https://example.com/very/long/destination/url" required autocomplete="off">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="custom-alias">Custom Alias (Optional)</label>
+            <input type="text" id="custom-alias" class="input-field" placeholder="e.g. my-awesome-project" autocomplete="off">
+          </div>
+
+          <div class="form-group">
+            <label for="expires-in">Expires In (Minutes, Optional)</label>
+            <input type="number" id="expires-in" class="input-field" placeholder="e.g. 60 for 1 hour" min="1">
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary" id="shorten-submit-btn">
+          <span>Shorten Link</span> &rarr;
+        </button>
+      </form>
+
+      <div id="shorten-error" class="error-card" role="alert"></div>
+
+      <div id="shorten-result" class="result-card">
+        <div class="result-header">
+          <span class="result-title">✓ Link Shortened Successfully!</span>
+          <button id="copy-btn" class="btn-secondary" type="button">Copy URL</button>
+        </div>
+        <div class="short-url-box">
+          <a id="short-url-link" class="short-url-link" href="#" target="_blank" rel="noopener"></a>
+        </div>
+        <div style="margin-top: 1rem;">
+          <button id="view-analytics-btn" class="btn-secondary" type="button">Inspect Click Analytics &rarr;</button>
+        </div>
+      </div>
+    </main>
+
+    <!-- SECTION: ANALYTICS -->
+    <section id="section-analytics" class="card" style="display: none;">
+      <form id="analytics-form">
+        <div class="form-group">
+          <label for="analytics-code">Enter Short Code or Alias</label>
+          <div style="display: flex; gap: 0.5rem;">
+            <input type="text" id="analytics-code" class="input-field" placeholder="e.g. 4c92 or my-awesome-project" required autocomplete="off">
+            <button type="submit" class="btn-primary" style="width: auto; padding: 0 1.5rem;" id="analytics-submit-btn">Search</button>
+          </div>
+        </div>
+      </form>
+
+      <div id="analytics-error" class="error-card" role="alert"></div>
+
+      <div id="analytics-result" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem;">
+          <h2 style="font-size: 1.25rem;">Analytics Overview</h2>
+          <div style="display: flex; gap: 0.5rem;">
+            <a id="test-redirect-btn" class="btn-secondary" target="_blank" rel="noopener" style="text-decoration: none;">Test Redirect ↗</a>
+            <button id="refresh-analytics-btn" class="btn-secondary" type="button">Refresh Stats ↻</button>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">Total Clicks</div>
+            <div id="stat-total-clicks" class="stat-value highlight">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Clicks Today</div>
+            <div id="stat-clicks-today" class="stat-value">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Clicks (Last 7 Days)</div>
+            <div id="stat-clicks-7days" class="stat-value">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Last Clicked</div>
+            <div id="stat-last-clicked" class="stat-value" style="font-size: 1rem; margin-top: 0.5rem; color: #a5b4fc;">Never</div>
+          </div>
+        </div>
+
+        <div class="analytics-meta">
+          <div class="meta-row">
+            <span>Short Code:</span>
+            <strong id="meta-short-code"></strong>
+          </div>
+          <div class="meta-row">
+            <span>Target Destination:</span>
+            <a id="meta-original-url" href="#" target="_blank" rel="noopener" style="color: #38bdf8; max-width: 60%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></a>
+          </div>
+          <div class="meta-row">
+            <span>Created At:</span>
+            <span id="meta-created-at"></span>
+          </div>
+          <div class="meta-row">
+            <span>Link Status:</span>
+            <span id="meta-status-badge" class="badge"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <p>Independent Go URL Shortener &bull; Built with Go, PostgreSQL, Redis & Vanilla Web Components</p>
+    </footer>
+  </div>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
