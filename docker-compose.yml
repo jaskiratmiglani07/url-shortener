@@ -1,0 +1,71 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: url-shortener-app
+    ports:
+      - "8080:8080"
+    environment:
+      - SERVER_PORT=8080
+      - BASE_URL=http://localhost:8080
+      - LOG_LEVEL=info
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/urlshortener?sslmode=disable
+      - REDIS_URL=redis://redis:6379/0
+      - CACHE_TTL_MINUTES=60
+      - RATE_LIMIT_ENABLED=true
+      - RATE_LIMIT_RPS=20
+      - RATE_LIMIT_BURST=40
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - app-net
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: url-shortener-postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=urlshortener
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d urlshortener"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - app-net
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: url-shortener-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: ["redis-server", "--appendonly", "yes", "--loglevel", "warning"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - app-net
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  app-net:
+    driver: bridge
