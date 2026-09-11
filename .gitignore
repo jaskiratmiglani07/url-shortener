@@ -1,0 +1,30 @@
+# Binaries
+bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+dist/
+
+# Test binary, output, and coverprofile
+*.test
+*.out
+coverage.html
+
+# Environment and secrets
+.env
+.env.local
+*.pem
+*.key
+
+# IDE and OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Docker
+postgres_data/
+redis_data/
