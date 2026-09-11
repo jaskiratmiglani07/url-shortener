@@ -71,9 +71,10 @@ func main() {
 	if err != nil {
 		logger.Warn("failed to initialize embedded static handler", "error", err)
 	}
+	indexHandler := web.IndexHandler()
 
 	handler := api.NewHandler(shortenerSvc, logger)
-	router := api.NewRouter(handler, staticHandler)
+	router := api.NewRouter(handler, indexHandler, staticHandler)
 
 	// 8. Chain middlewares: Panic Recovery -> Request Logging -> Rate Limiter -> Router
 	var finalHandler http.Handler = router

@@ -6,7 +6,7 @@ import (
 )
 
 // NewRouter registers all API endpoints and static assets onto a standard ServeMux.
-func NewRouter(h *Handler, staticHandler http.Handler) *http.ServeMux {
+func NewRouter(h *Handler, indexHandler http.Handler, staticHandler http.Handler) *http.ServeMux {
 	mux := http.NewServeMux()
 
 	// Health probes
@@ -32,8 +32,8 @@ func NewRouter(h *Handler, staticHandler http.Handler) *http.ServeMux {
 	mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
 		path := strings.Trim(r.URL.Path, "/")
 		if path == "" || path == "index.html" {
-			if staticHandler != nil {
-				staticHandler.ServeHTTP(w, r)
+			if indexHandler != nil {
+				indexHandler.ServeHTTP(w, r)
 				return
 			}
 			w.Header().Set("Content-Type", "text/plain; charset=utf-8")

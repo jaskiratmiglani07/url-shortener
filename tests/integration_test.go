@@ -22,8 +22,9 @@ func setupTestServer(rps, burst int, rateLimitEnabled bool) (http.Handler, *stor
 	shortenerSvc := service.NewShortenerService(cachedStore, "http://localhost:8080")
 
 	staticHandler, _ := web.StaticHandler()
+	indexHandler := web.IndexHandler()
 	handler := api.NewHandler(shortenerSvc, nil)
-	router := api.NewRouter(handler, staticHandler)
+	router := api.NewRouter(handler, indexHandler, staticHandler)
 
 	limiter := ratelimit.NewLimiter(nil, rps, burst, rateLimitEnabled, nil)
 

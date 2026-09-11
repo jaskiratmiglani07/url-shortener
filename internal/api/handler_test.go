@@ -16,7 +16,7 @@ func setupTestApp() (*Handler, *http.ServeMux, *store.MemoryStore) {
 	memStore := store.NewMemoryStore()
 	svc := service.NewShortenerService(memStore, "http://localhost:8080")
 	handler := NewHandler(svc, nil)
-	router := NewRouter(handler, nil)
+	router := NewRouter(handler, nil, nil)
 	return handler, router, memStore
 }
 
@@ -151,6 +151,42 @@ func TestHandler_NotFound(t *testing.T) {
 
 	if rec.Code != http.StatusNotFound {
 		t.Errorf("expected 404 Not Found, got %d", rec.Code)
+	}
+}
+
+func TestHandler_Index(t *testing.T) {
+	_, _, memStore := setupTestApp()
+	svc := service.NewShortenerService(memStore, "http://localhost:8080")
+	handler := NewHandler(svc, nil)
+
+	// With a real indexHandler that returns HTML
+	indexHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("<html><body>URL Shortener</body></html>"))
+	})
+	router := NewRouter(handler, indexHandler, nil)
+
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	rec := httptest.NewRecorder()
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Errorf("expected 200 OK for GET /, got %d", rec.Code)
+	}
+	ct := rec.Header().Get("Content-Type")
+	if ct != "text/html; charset=utf-8" {
+		t.Errorf("expected text/html content-type, got %s", ct)
+	}
+
+	// Without indexHandler — fallback plain text response
+	routerNoIndex := NewRouter(handler, nil, nil)
+	req2 := httptest.NewRequest(http.MethodGet, "/", nil)
+	rec2 := httptest.NewRecorder()
+	routerNoIndex.ServeHTTP(rec2, req2)
+
+	if rec2.Code != http.StatusOK {
+		t.Errorf("expected 200 OK for GET / (no indexHandler), got %d", rec2.Code)
 	}
 }
 
