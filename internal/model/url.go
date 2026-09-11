@@ -36,6 +36,7 @@ type ShortenResponse struct {
 	OriginalURL string     `json:"original_url"`
 	CreatedAt   time.Time  `json:"created_at"`
 	ExpiresAt   *time.Time `json:"expires_at,omitempty"`
+	IsExpired   bool       `json:"is_expired"`
 }
 
 // AnalyticsResponse represents the click analytics data for a short URL.
@@ -44,6 +45,7 @@ type AnalyticsResponse struct {
 	OriginalURL     string     `json:"original_url"`
 	CreatedAt       time.Time  `json:"created_at"`
 	ExpiresAt       *time.Time `json:"expires_at,omitempty"`
+	IsExpired       bool       `json:"is_expired"`
 	TotalClicks     int64      `json:"total_clicks"`
 	ClicksToday     int64      `json:"clicks_today"`
 	ClicksLast7Days int64      `json:"clicks_last_7_days"`

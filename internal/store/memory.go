@@ -55,6 +55,19 @@ func (m *MemoryStore) GetByShortCode(ctx context.Context, shortCode string) (*mo
 	return &copied, nil
 }
 
+// SetExpiration is a test helper method to adjust expiration timestamps.
+func (m *MemoryStore) SetExpiration(shortCode string, expiresAt *time.Time) error {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	u, exists := m.urls[shortCode]
+	if !exists {
+		return ErrNotFound
+	}
+	u.ExpiresAt = expiresAt
+	return nil
+}
+
 func (m *MemoryStore) RecordClick(ctx context.Context, urlID int64) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -100,6 +113,7 @@ func (m *MemoryStore) GetAnalytics(ctx context.Context, shortCode string) (*mode
 		OriginalURL:     u.OriginalURL,
 		CreatedAt:       u.CreatedAt,
 		ExpiresAt:       u.ExpiresAt,
+		IsExpired:       u.IsExpired(),
 		TotalClicks:     totalClicks,
 		ClicksToday:     clicksToday,
 		ClicksLast7Days: clicks7Days,

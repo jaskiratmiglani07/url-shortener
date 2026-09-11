@@ -180,6 +180,7 @@ func (s *PostgresStore) GetAnalytics(ctx context.Context, shortCode string) (*mo
 
 	if expiresAt.Valid {
 		resp.ExpiresAt = &expiresAt.Time
+		resp.IsExpired = time.Now().UTC().After(expiresAt.Time)
 	}
 	if lastClickedAt.Valid {
 		resp.LastClickedAt = &lastClickedAt.Time

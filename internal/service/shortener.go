@@ -131,5 +131,6 @@ func (s *ShortenerService) buildResponse(u *model.URL) *model.ShortenResponse {
 		OriginalURL: u.OriginalURL,
 		CreatedAt:   u.CreatedAt,
 		ExpiresAt:   u.ExpiresAt,
+		IsExpired:   u.IsExpired(),
 	}
 }
